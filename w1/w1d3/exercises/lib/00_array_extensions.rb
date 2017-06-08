@@ -1,3 +1,4 @@
+require 'byebug'
 # Sum
 #
 # Write an Array method, `sum`, that returns the sum of the elements in the
@@ -5,6 +6,8 @@
 
 class Array
   def sum
+    return 0 if empty?
+    inject(:+)
   end
 end
 
@@ -16,9 +19,13 @@ end
 
 class Array
   def square!
+    return self if empty?
+    map! { |el| el = el * el }
   end
 
   def square
+    return self if empty?
+    map { |el| el = el * el }
   end
 end
 
@@ -36,6 +43,13 @@ end
 
 class Array
   def my_uniq
+    result = []
+
+    each do |el|
+      result << el unless result.include?(el)
+    end
+
+    result
   end
 end
 
@@ -57,6 +71,15 @@ end
 
 class Array
   def two_sum
+    result = []
+
+    [*0...length].each_with_index do |x, idx|
+      [*(idx + 1)...length].each do |y|
+        result << [x, y] if self[x] + self[y] == 0
+      end
+    end
+
+    result
   end
 end
 
@@ -69,6 +92,16 @@ end
 
 class Array
   def median
+    return nil if empty?
+    middle_index = length / 2
+    sorted = self.sort
+    if length.odd?
+      return sorted[middle_index]
+    else
+      first_middle = sorted[middle_index]
+      second_middle = sorted[middle_index - 1]
+      return (first_middle + second_middle) / 2.0
+    end
   end
 end
 
@@ -121,6 +154,16 @@ end
 
 class Array
   def my_transpose
+    # debugger
+    result = []
+    final = []
+    self.each_index do |i|
+      self.each_index do |j|
+        result << self[j][i]
+      end
+    end
+  result.each_slice(self.length) { |slice| final << slice }
+  final
   end
 end
 

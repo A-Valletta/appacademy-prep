@@ -1,9 +1,15 @@
+require 'byebug'
 # ### Factors
 #
 # Write a method `factors(num)` that returns an array containing all the
 # factors of a given number.
 
 def factors(num)
+  final = []
+  (1..Math.sqrt(num).round).to_a.each do |factor|
+    final << factor << num / factor if num % factor == 0
+  end
+  final.sort.uniq
 end
 
 # ### Bubble Sort
@@ -46,10 +52,27 @@ end
 # http://stackoverflow.com/questions/827649/what-is-the-ruby-spaceship-operator
 
 class Array
-  def bubble_sort!
+  def bubble_sort!(&prc)
+    prc ||= Proc.new { |x, y| x <=> y }
+    return self if self.length <= 1
+    self.length.times do
+      (0...(self.length - 1)).to_a.each do |idx|
+        # debugger
+        case prc.call(self[idx], self[idx + 1])
+        when 1
+          self[idx], self[idx + 1] = self[idx + 1], self[idx]
+        else
+          next
+        end
+      end
+    end
+    self
   end
 
   def bubble_sort(&prc)
+    dupped_array = self.dup
+    dupped_array.bubble_sort!(&prc)
+    dupped_array
   end
 end
 
@@ -67,9 +90,20 @@ end
 # words).
 
 def substrings(string)
+  substrings = []
+  (0..string.length).to_a.each do |x|
+    (0..string.length).to_a.each do |y|
+      substrings << string[x..y]
+    end
+  end
+  substrings.delete_if { |sub_string| sub_string == ''}.uniq
 end
 
 def subwords(word, dictionary)
+  sub_words = substrings(word)
+  real_words = []
+  sub_words.each { |word| real_words << word if dictionary.include?(word) }
+  real_words
 end
 
 # ### Doubler
@@ -77,6 +111,7 @@ end
 # array with the original elements multiplied by two.
 
 def doubler(array)
+  array.map { |el| el * 2 }
 end
 
 # ### My Each
@@ -104,6 +139,12 @@ end
 
 class Array
   def my_each(&prc)
+    index = 0
+    while index < self.length
+      prc.call(self[index])
+      index += 1
+    end
+    self
   end
 end
 
@@ -122,12 +163,29 @@ end
 
 class Array
   def my_map(&prc)
+    # debugger
+    mapped_array = []
+    self.my_each { |value|  mapped_array <<  prc.call(value) }
+    mapped_array
   end
 
   def my_select(&prc)
+    selected_array = []
+    self.my_each do |value|
+      selected_array << value if prc.call(value)
+    end
+    selected_array
   end
 
   def my_inject(&blk)
+    # debugger
+    injected_array = self.dup
+    accumulator = injected_array.shift
+    injected_array.my_each do |value|
+      # debugger
+      accumulator = blk.call(accumulator, value)
+    end
+    accumulator
   end
 end
 
@@ -141,4 +199,5 @@ end
 # ```
 
 def concatenate(strings)
+  strings.inject(:+)
 end

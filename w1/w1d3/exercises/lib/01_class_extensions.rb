@@ -1,3 +1,4 @@
+require 'byebug'
 # String: Caesar cipher
 #
 # * Implement a Caesar cipher: http://en.wikipedia.org/wiki/Caesar_cipher
@@ -18,6 +19,15 @@
 
 class String
   def caesar(shift)
+    ascii_string = split('').map { |string| string.ord }
+
+    ascii_string.map do |order|
+      if order + shift > 122
+        order = (order + shift - 26).chr
+      else
+        order = (order + shift).chr
+      end
+    end.join('')
   end
 end
 
@@ -36,6 +46,14 @@ end
 
 class Hash
   def difference(other_hash)
+    final_hash = {}
+    uniq_self_keys = keys - other_hash.keys
+    uniq_other_keys = other_hash.keys - keys
+
+    uniq_self_keys.each { |key| final_hash[key] = self[key] }
+    uniq_other_keys.each { |key| final_hash[key] = other_hash[key] }
+
+    final_hash
   end
 end
 
@@ -98,6 +116,33 @@ end
 
 class Fixnum
   def stringify(base)
+    final = ''
+    power = 0
+    hexadecimal_hash = { 0 => '0',
+      1 => '1',
+      2 => '2',
+      3 => '3',
+      4 => '4',
+      5 => '5',
+      6 => '6',
+      7 => '7',
+      8 => '8',
+      9 => '9',
+      10 => 'a',
+      11 => 'b',
+      12 => 'c',
+      13 => 'd',
+      14 => 'e',
+      15 => 'f'
+  }
+
+    # debugger
+    until self / (base ** power) == 0
+      final << hexadecimal_hash[(self / (base ** power)) % base]
+      power += 1
+    end
+
+    final.reverse
   end
 end
 
