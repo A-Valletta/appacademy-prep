@@ -29,6 +29,51 @@
 # all the items of `set1` that aren't in `set2`.
 
 class MyHashSet
+  attr_reader :store
+  def initialize
+    @store = Hash.new(false)
+  end
+
+  def insert(el)
+    @store[el] = true
+  end
+
+  def include?(el)
+    @store[el]
+  end
+
+  def delete(el)
+    @store.delete(el)
+  end
+
+  def to_a
+    @store.keys
+  end
+
+  def union(hash_set)
+    return_hash_set = MyHashSet.new
+    @store.merge(hash_set.store).keys.each do |key|
+      return_hash_set.insert(key)
+    end
+    return_hash_set
+  end
+
+  def intersect(hash_set)
+    return_hash_set = MyHashSet.new
+    key_difference = to_a - hash_set.to_a
+    (to_a - key_difference).each do |key|
+      return_hash_set.insert(key)
+    end
+    return_hash_set
+  end
+
+  def minus(hash_set)
+    return_hash_set = MyHashSet.new
+    (to_a - hash_set.to_a).each do |key|
+      return_hash_set.insert(key)
+    end
+    return_hash_set
+  end
 end
 
 # Bonus
